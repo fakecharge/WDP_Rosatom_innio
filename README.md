@@ -56,4 +56,4 @@
 ```cd WDP_Rosatom_innio```
 2. **Установите зависимости**:<br> ```pip install -r requirements.txt```
 
-3. **Откройте Jupiter Notebook**:<br> FULL_LAUNCH.ipynb
+3. **Откройте Jupiter Notebook**:<br> [FULL_LAUNCH.ipynb](FULL_LAUNCH.ipynb)

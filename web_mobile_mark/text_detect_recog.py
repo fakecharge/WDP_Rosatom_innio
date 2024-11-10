@@ -11,7 +11,7 @@ import io
 from itertools import combinations, chain
 
 file_path = './bd/ДеталиПоПлануДляРазрешенныхЗаказов.xlsx'
-modet_path = "models/best.pt"
+modet_path = "./models/best.pt"
 
 
 def detect_and_recognition(img):
@@ -107,16 +107,16 @@ def find_best_match(df, search_string):
 
     return best_row_index
 
-def find_best_match_all_combinations(table, snippets):
+def find_best_match_all_combinations(table, snippets, table_vectors, vectorizer ):
     if table.empty:
         return -1
 
-    # Объединяем первый и второй столбцы для каждой строки
-    combined_text = table.iloc[:, :2].apply(lambda row: ' '.join(row.astype(str)), axis=1)
-
-    # Используем TF-IDF для векторизации текста
-    vectorizer = TfidfVectorizer()
-    table_vectors = vectorizer.fit_transform(combined_text)
+    # # Объединяем первый и второй столбцы для каждой строки
+    # combined_text = table.iloc[:, :2].apply(lambda row: ' '.join(row.astype(str)), axis=1)
+    #
+    # # Используем TF-IDF для векторизации текста
+    # vectorizer = TfidfVectorizer()
+    # table_vectors = vectorizer.fit_transform(combined_text)
 
     best_match_index = -1
     max_similarity = 0
@@ -143,9 +143,9 @@ def find_best_match_all_combinations(table, snippets):
     return best_match_index
 
 
-def find_in_BD(text, df):
-    best_match_index = find_best_match(df, text)
-    #best_match_index = find_best_match_all_combinations(df, text)
+def find_in_BD(text, df, table_vectors, vectorizer):
+    #best_match_index = find_best_match(df, text)
+    best_match_index = find_best_match_all_combinations(df, text, table_vectors, vectorizer)
 
     best_match_row = df.iloc[best_match_index]  # Получаем всю строку по индексу
     print("Строка с максимальным совпадением:")
@@ -167,6 +167,6 @@ if __name__ == "__main__":
 
     print(text)
 
-    best_match = find_in_BD(text)
+    best_match = find_in_BD(text, df)
 
 

@@ -4,6 +4,7 @@ import text_detect_recog
 import numpy as np
 import pandas as pd
 import connect_1c
+from sklearn.feature_extraction.text import TfidfVectorizer
 
 
 data_loaded = False
@@ -13,6 +14,7 @@ image_file = st.camera_input("Сделайте снимок")
 
 # Загрузка базы из 1C или локально из файла
 local_file_path = './bd/ДеталиПоПлануДляРазрешенныхЗаказов.xlsx'
+@st.cache_data
 def load_data():
     global data_loaded
     global suggestions  # Делаем suggestions глобальной переменной
@@ -23,8 +25,16 @@ def load_data():
         except:
             # Загружаем данные из файла
             df = pd.read_excel(local_file_path) #, usecols=[0]
+        print('vectorized----------------------------------][][]')
+        # Объединяем первый и второй столбцы для каждой строки
+        combined_text = df.iloc[:, :2].apply(lambda row: ' '.join(row.astype(str)), axis=1)
+
+        # Используем TF-IDF для векторизации текста
+        vectorizer = TfidfVectorizer()
+        table_vectors = vectorizer.fit_transform(combined_text)
     data_loaded = True
-    return df
+
+    return df, table_vectors, vectorizer
 
 if image_file is not None:
     # Если изображение было получено, отображаем его
@@ -41,10 +51,10 @@ if image_file is not None:
         st.header(text[0])
 
         # Загружаем базу для поиска и для автодополнения при ручном вводе
-        df = load_data()
+        df, table_vectors, vectorizer = load_data()
 
         # Ищем в базе билжайший артикть и серийный номер
-        best_match = text_detect_recog.find_in_BD(text, df)
+        best_match = text_detect_recog.find_in_BD(text, df, table_vectors, vectorizer)
 
 
 
